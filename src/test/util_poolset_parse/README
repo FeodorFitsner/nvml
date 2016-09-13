@@ -63,3 +63,6 @@ There are following test set files available:
 	- TEST 34 - correct set file: blank lines
 	- TEST 35 - correct set file: blank lines
 	- TEST 36 - correct set file: whitespace before size
+	- TEST 37 - correct set file:
+	- TEST 38 - incorrect set file: remote node addr/descriptor is missing
+	- TEST 39 - incorrect set file: path on remote node is not relative
