@@ -36,6 +36,9 @@
 TARGET = obj_list
 OBJS = obj_list.o
 
+BUILD_STATIC_DEBUG=n
+BUILD_STATIC_NONDEBUG=n
+
 LIBPMEM=y
 LIBPMEMOBJ=internal-debug
 

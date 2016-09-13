@@ -40,6 +40,8 @@ export UNITTEST_NUM=2
 # standard unit test setup
 . ../unittest/unittest.sh
 
+require_build_type debug
+
 setup
 
 truncate -s1M $DIR/testfile

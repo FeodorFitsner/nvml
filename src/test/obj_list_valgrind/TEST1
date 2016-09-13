@@ -42,6 +42,8 @@ export UNITTEST_NUM=1
 . ../unittest/unittest.sh
 
 require_fs_type pmem non-pmem
+require_build_type debug
+
 configure_valgrind pmemcheck force-enable ../obj_list/obj_list
 export VALGRIND_OPTS="--mult-stores=yes"
 setup
