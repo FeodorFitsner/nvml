@@ -263,6 +263,19 @@ Depends: libpmemlog (=\${binary:Version}),  \${shlibs:Depends}, \${misc:Depends}
 Description: Development files for libpmemlog
  Development files for libpmemlog library.
 
+Package: libpmemcto
+Architecture: any
+Depends: libpmem (=\${binary:Version}), \${shlibs:Depends}, \${misc:Depends}
+Description: NVML libpmemcto library
+ NVM Library for Persistent Memory support - close-to-open pesistency.
+
+Package: libpmemcto-dev
+Section: libdevel
+Architecture: any
+Depends: libpmemcto (=\${binary:Version}),  \${shlibs:Depends}, \${misc:Depends}
+Description: Development files for libpmemcto
+ Development files for libpmemcto library.
+
 Package: libpmemobj
 Architecture: any
 Depends: libpmem (=\${binary:Version}), \${shlibs:Depends}, \${misc:Depends}
@@ -472,6 +485,41 @@ interest man-db
 EOF
 
 cat << EOF > debian/libpmemlog-dev.lintian-overrides
+$ITP_BUG_EXCUSE
+new-package-should-close-itp-bug
+# The following warnings are triggered by a bug in debhelper:
+# http://bugs.debian.org/204975
+postinst-has-useless-call-to-ldconfig
+postrm-has-useless-call-to-ldconfig
+# We do not want to compile with -O2 for debug version
+hardening-no-fortify-functions $LIB_DIR/nvml_dbg/*
+EOF
+
+cat << EOF > debian/libpmemcto.install
+$LIB_DIR/libpmemcto.so.*
+EOF
+
+cat << EOF > debian/libpmemcto.lintian-overrides
+$ITP_BUG_EXCUSE
+new-package-should-close-itp-bug
+libpmemcto: package-name-doesnt-match-sonames
+EOF
+
+cat << EOF > debian/libpmemcto-dev.install
+$LIB_DIR/nvml_debug/libpmemcto.a $LIB_DIR/nvml_dbg/
+$LIB_DIR/nvml_debug/libpmemcto.so $LIB_DIR/nvml_dbg/
+$LIB_DIR/nvml_debug/libpmemcto.so.* $LIB_DIR/nvml_dbg/
+$LIB_DIR/libpmemcto.so
+$LIB_DIR/pkgconfig/libpmemcto.pc
+$INC_DIR/libpmemcto.h
+$MAN3_DIR/libpmemcto.3.gz
+EOF
+
+cat << EOF > debian/libpmemcto-dev.triggers
+interest man-db
+EOF
+
+cat << EOF > debian/libpmemcto-dev.lintian-overrides
 $ITP_BUG_EXCUSE
 new-package-should-close-itp-bug
 # The following warnings are triggered by a bug in debhelper:

@@ -70,7 +70,7 @@ New-Item -ItemType directory -Path ( $zipdir + "\bin\") -Force | Out-Null
 New-Item -ItemType directory -Path ( $zipdir + "\lib\") -Force | Out-Null
 
 $libs = @("libpmem", "libpmemblk", "libpmemlog", "libpmemobj", "libpmempool",
-    "libvmem")
+    "libvmem", "libpmemcto")
 $apps = @("pmempool")
 $apps_extended =  @("pmempool", "pmemalloc", "pmemdetect", "pmemspoil", "pmemwrite")
 

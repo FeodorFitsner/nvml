@@ -1481,7 +1481,7 @@ void pools_shared_data_destroy(void)
 }
 
 pool_t *
-je_pool_create(void *addr, size_t size, int zeroed)
+je_pool_create(void *addr, size_t size, int zeroed, int empty)
 {
 	if (malloc_init())
 		return (NULL);
@@ -1536,63 +1536,73 @@ je_pool_create(void *addr, size_t size, int zeroed)
 		return (NULL);
 	}
 
-	if (!zeroed)
-		memset(addr, 0, sizeof (pool_t));
+	if (empty) {
+		if (!zeroed)
+			memset(addr, 0, sizeof (pool_t));
 
-	/* preinit base allocator in unused space, align the address to the cache line */
-	pool->base_next_addr = (void *)CACHELINE_CEILING((uintptr_t)addr +
-		sizeof (pool_t));
-	pool->base_past_addr = (void *)((uintptr_t)addr + size);
+		/* preinit base allocator in unused space, align the address to the cache line */
+		pool->base_next_addr = (void *)CACHELINE_CEILING((uintptr_t)addr +
+			sizeof (pool_t));
+		pool->base_past_addr = (void *)((uintptr_t)addr + size);
 
-	/* prepare pool and internal structures */
-	if (pool_new(pool, pool_id)) {
+		/* prepare pool and internal structures */
+		if (pool_new(pool, pool_id)) {
+			assert(pools[pool_id] == NULL);
+			malloc_mutex_unlock(&pools_lock);
+			pools_shared_data_destroy();
+			return NULL;
+		}
+
+		/* preallocate the chunk tree nodes for the maximum possible number of chunks */
+		result = base_node_prealloc(pool, size/chunksize);
+		assert(result == 0);
+
 		assert(pools[pool_id] == NULL);
+		pool->seqno = pool_seqno++;
+		pools[pool_id] = pool;
+		npools_cnt++;
 		malloc_mutex_unlock(&pools_lock);
-		pools_shared_data_destroy();
-		return (NULL);
+
+		pool->memory_range_list = base_alloc(pool, sizeof (*pool->memory_range_list));
+
+		/* pointer to the address of chunks, align the address to chunksize */
+		void *usable_addr =
+			(void *)CHUNK_CEILING((uintptr_t)pool->base_next_addr);
+
+		/* reduce end of base allocator up to chunks start */
+		pool->base_past_addr = usable_addr;
+
+		/* usable chunks space, must be multiple of chunksize */
+		size_t usable_size =
+			(size - (uintptr_t)((char *)usable_addr - (char *)addr))
+			& ~chunksize_mask;
+
+		assert(usable_size > 0);
+
+		malloc_mutex_lock(&pool->memory_range_mtx);
+		pool->memory_range_list->next = NULL;
+		pool->memory_range_list->addr = (uintptr_t)addr;
+		pool->memory_range_list->addr_end = (uintptr_t)addr + size;
+		pool->memory_range_list->usable_addr = (uintptr_t)usable_addr;
+		pool->memory_range_list->usable_addr_end = (uintptr_t)usable_addr + usable_size;
+		malloc_mutex_unlock(&pool->memory_range_mtx);
+
+		/* register the usable pool space as a single big chunk */
+		chunk_record(pool,
+			&pool->chunks_szad_mmap, &pool->chunks_ad_mmap,
+			usable_addr, usable_size, zeroed);
+
+		pool->ctl_initialized = false;
+	} else {
+		pool->pool_id = pool_id;
+		assert(pools[pool_id] == NULL);
+		pool->seqno = pool_seqno++;
+		pools[pool_id] = pool;
+		npools_cnt++;
+		malloc_mutex_unlock(&pools_lock);
 	}
 
-	/* preallocate the chunk tree nodes for the maximum possible number of chunks */
-	result = base_node_prealloc(pool, size/chunksize);
-	assert(result == 0);
-
-	assert(pools[pool_id] == NULL);
-	pools[pool_id] = pool;
-	pools[pool_id]->seqno = ++pool_seqno;
-	npools_cnt++;
-
-	malloc_mutex_unlock(&pools_lock);
-
-	pool->memory_range_list = base_alloc(pool, sizeof (*pool->memory_range_list));
-
-	/* pointer to the address of chunks, align the address to chunksize */
-	char *usable_addr = (void*)CHUNK_CEILING((uintptr_t)pool->base_next_addr);
-
-	/* reduce end of base allocator up to chunks start */
-	pool->base_past_addr = usable_addr;
-
-	/* usable chunks space, must be multiple of chunksize */
-	size_t usable_size = (size - (uintptr_t)(usable_addr - (char *)addr))
-		& ~chunksize_mask;
-
-	assert(usable_size > 0);
-
-	malloc_mutex_lock(&pool->memory_range_mtx);
-	pool->memory_range_list->next = NULL;
-	pool->memory_range_list->addr = (uintptr_t)addr;
-	pool->memory_range_list->addr_end = (uintptr_t)addr + size;
-	pool->memory_range_list->usable_addr = (uintptr_t)usable_addr;
-	pool->memory_range_list->usable_addr_end = (uintptr_t)usable_addr + usable_size;
-	malloc_mutex_unlock(&pool->memory_range_mtx);
-
-	/* register the usable pool space as a single big chunk */
-	chunk_record(pool,
-		&pool->chunks_szad_mmap, &pool->chunks_ad_mmap,
-		usable_addr, usable_size, zeroed);
-
-	pool->ctl_initialized = false;
-
-	return (pool);
+	return pool;
 }
 
 int

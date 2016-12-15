@@ -16,13 +16,14 @@ Please see the file [LICENSE](https://github.com/pmem/nvml/blob/master/LICENSE)
 for information on how this library is licensed.
 
 This tree contains a collection of libraries for using Non-Volatile Memory
-(NVM).  There are currently eight libraries:
+(NVM).  There are currently nine libraries:
 
 * **libpmem** -- basic pmem operations like flushing
 * **libpmemblk**, **libpmemlog**, **libpmemobj** -- pmem transactions
 * **libvmem**, **libvmmalloc** -- volatile use of pmem
 * **libpmempool** -- persistent memory pool management
 * **librpmem** -- remote access to persistent memory (EXPERIMENTAL)
+* **libpmemcto** -- close-to-open persistence (EXPERIMENTAL)
 
 and one command-line utility:
 
@@ -38,9 +39,10 @@ and tutorials.
 >
 >The source tree contains MS Visual Studio solution and project files,
 allowing to compile _libpmem_, _libpmemlog_, _libpmemblk_, _libpmemobj_,
-_libpmempool_ and _libvmem_ libraries for Windows, with all the corresponding
-unit tests and selected examples.  The _pmempool_ utility and NVML
-benchmarks are also ported.  Current progress of this work is tracked on
+_libpmemcto_, _libpmempool_ and _libvmem_ libraries for Windows,
+with all the corresponding unit tests and selected examples.
+The _pmempool_ utility and NVML benchmarks are also ported.
+Current progress of this work is tracked on
 [NVML for Windows Trello Board](https://trello.com/b/IMPSJ4Iu/nvml-for-windows).
 See also description of the first [NVML for Windows Technical Preview release]
 (https://github.com/pmem/nvml/releases/1.2+wtp1)

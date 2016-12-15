@@ -56,7 +56,7 @@ else
 fi
 
 # valid area names
-AREAS="pmem\|rpmem\|log\|blk\|obj\|pool\|test\|benchmark\|examples\|vmem\|jemalloc\|cpp\|doc\|common"
+AREAS="pmem\|rpmem\|log\|blk\|obj\|pool\|test\|benchmark\|examples\|vmem\|jemalloc\|cpp\|doc\|common\|cto"
 
 # Check for changes in the generated docs directory
 for commit in $commits; do

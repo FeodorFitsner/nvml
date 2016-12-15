@@ -37,12 +37,12 @@ include $(TOP)/src/common.inc
 include $(TOP)/src/version.inc
 
 TARGETS = libpmem libvmem libpmemblk libpmemlog libpmemobj libpmempool\
-	libvmmalloc tools
+	libpmemcto libvmmalloc tools
 ALL_TARGETS = $(TARGETS) common librpmem examples benchmarks
 SCOPE_DIRS = $(TARGETS) common librpmem rpmem_common
 
 DEBUG_RELEASE_TARGETS = common libpmem libvmem libpmemblk libpmemlog libpmemobj\
-	libpmempool libvmmalloc librpmem
+	libpmempool libvmmalloc librpmem libpmemcto
 RELEASE_TARGETS = tools examples benchmarks
 
 CLEAN_NO_JE_TARGETS = $(ALL_TARGETS) rpmem_common test
@@ -57,7 +57,7 @@ HEADERS_DESTDIR = $(DESTDIR)$(includedir)
 HEADERS_INSTALL = include/libpmem.h include/libvmem.h\
 		include/libpmemobj.h include/libpmempool.h\
 		include/libpmemblk.h include/libpmemlog.h\
-		include/libvmmalloc.h
+		include/libvmmalloc.h include/libpmemcto.h
 
 OBJ_HEADERS_INSTALL = include/libpmemobj/*.h
 
@@ -66,13 +66,14 @@ CPP_HEADERS_DESTDIR = $(DESTDIR)$(includedir)/libpmemobj++
 PKG_CONFIG_DESTDIR = $(DESTDIR)$(pkgconfigdir)
 PKG_CONFIG_COMMON = common.pc
 PKG_CONFIG_FILES = libpmem.pc libvmem.pc libvmmalloc.pc libpmemobj.pc\
-		libpmemlog.pc libpmemblk.pc libpmempool.pc libpmemobj++.pc
+		libpmemlog.pc libpmemblk.pc libpmempool.pc libpmemobj++.pc\
+		libpmemcto.pc
 
 ifeq ($(EXPERIMENTAL),y)
 ifeq ($(BUILD_RPMEM),y)
-	PKG_CONFIG_FILES += librpmem.pc
-	HEADERS_INSTALL += include/librpmem.h
-	INSTALL_TARGETS += librpmem
+	PKG_CONFIG_FILES += librpmem.pc libpmemcto.pc
+	HEADERS_INSTALL += include/librpmem.h include/libpmemcto.h
+	INSTALL_TARGETS += librpmem libpmemcto
 endif
 endif
 
@@ -123,9 +124,9 @@ sparse: $(SPARSE_TARGETS:=-sparse)
 
 custom_build = $(DEBUG)$(OBJDIR)
 
-libvmmalloc libvmem: jemalloc
-tools: libpmem libpmemblk libpmemlog libpmemobj
-libpmemblk libpmemlog libpmemobj: libpmem
+libvmmalloc libvmem libpmemcto: jemalloc
+tools: libpmem libpmemblk libpmemlog libpmemobj libpmemcto
+libpmemblk libpmemlog libpmemobj libpmemcto: libpmem
 benchmarks test tools: common
 
 # re-generate *.pc files if version, prefix or libdir changes
@@ -220,7 +221,7 @@ clean: clean-here
 
 clobber: clean-here
 
-.NOTPARALLEL: libvmem libvmmalloc
+.NOTPARALLEL: libvmem libvmmalloc libpmemcto
 
 .PHONY: all install uninstall uninstall-cpp install-cpp clean clobber cstyle\
 	format test check pcheck jemalloc jemalloc-clean jemalloc-test\

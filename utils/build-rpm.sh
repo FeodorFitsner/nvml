@@ -294,6 +294,33 @@ Development files for NVML libpmemlog library
 %{_includedir}/libpmemlog.h
 %{_mandir}/man3/libpmemlog.3.gz
 
+%package -n libpmemcto
+Summary: libpmemcto library
+Group: %{package_group}/Libraries
+%description -n libpmemcto
+NVML libpmemcto library
+
+%files -n libpmemcto
+%defattr(-,root,root,-)
+%{_libdir}/libpmemcto.so.*
+
+%package -n libpmemcto-devel
+Summary: libpmemcto development library
+Group: Development/Libraries
+%description -n libpmemcto-devel
+Development files for NVML libpmemcto library
+
+%files -n libpmemcto-devel
+%defattr(-,root,root,-)
+%{_libdir}/libpmemcto.so
+%{_libdir}/libpmemcto.a
+%{_libdir}/pkgconfig/libpmemcto.pc
+%{_libdir}/nvml_debug/libpmemcto.so
+%{_libdir}/nvml_debug/libpmemcto.so.*
+%{_libdir}/nvml_debug/libpmemcto.a
+%{_includedir}/libpmemcto.h
+%{_mandir}/man3/libpmemcto.3.gz
+
 %package -n libpmemobj
 Summary: libpmemobj library
 Group: %{package_group}/Libraries

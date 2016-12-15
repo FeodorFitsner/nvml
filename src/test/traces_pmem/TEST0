@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright 2014-2016, Intel Corporation
+# Copyright 2014-2017, Intel Corporation
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -55,6 +55,8 @@ export PMEMLOG_LOG_LEVEL=4
 export PMEMLOG_LOG_FILE=./trace_pmemlog$UNITTEST_NUM.log
 export PMEMOBJ_LOG_LEVEL=4
 export PMEMOBJ_LOG_FILE=./trace_pmemobj$UNITTEST_NUM.log
+export PMEMCTO_LOG_LEVEL=4
+export PMEMCTO_LOG_FILE=./trace_pmemcto$UNITTEST_NUM.log
 
 expect_normal_exit ./traces_pmem$EXESUFFIX
 
