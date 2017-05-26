@@ -49,6 +49,7 @@
 #include "libpmem.h"
 #include "libpmemlog.h"
 #include "libpmemblk.h"
+#include "libpmemcto.h"
 #include "libpmempool.h"
 
 #include "out.h"
@@ -57,6 +58,7 @@
 #include "lane.h"
 #include "obj.h"
 #include "btt.h"
+#include "cto.h"
 #include "file.h"
 #include "os.h"
 #include "set.h"
@@ -139,6 +141,8 @@ pool_get_min_size(enum pool_type type)
 		return PMEMBLK_MIN_POOL;
 	case POOL_TYPE_OBJ:
 		return PMEMOBJ_MIN_POOL;
+	case POOL_TYPE_CTO:
+		return PMEMCTO_MIN_POOL;
 	default:
 		break;
 	}
@@ -255,6 +259,8 @@ pool_check_type_to_pool_type(enum pmempool_pool_type check_pool_type)
 		return POOL_TYPE_BLK;
 	case PMEMPOOL_POOL_TYPE_OBJ:
 		return POOL_TYPE_OBJ;
+	case PMEMPOOL_POOL_TYPE_CTO:
+		return POOL_TYPE_CTO;
 	default:
 		ERR("can not convert pmempool_pool_type %u to pool_type",
 			check_pool_type);
@@ -389,6 +395,10 @@ pool_params_parse(const PMEMpoolcheck *ppc, struct pool_params *params,
 		struct pmemobjpool *pop = addr;
 		memcpy(params->obj.layout, pop->layout,
 			PMEMOBJ_MAX_LAYOUT);
+	} else if (params->type == POOL_TYPE_CTO) {
+		struct pmemcto *pcp = addr;
+		memcpy(params->cto.layout, pcp->layout,
+			PMEMCTO_MAX_LAYOUT);
 	}
 
 out_unmap:
@@ -919,6 +929,8 @@ pool_get_signature(enum pool_type type)
 		return BLK_HDR_SIG;
 	case POOL_TYPE_OBJ:
 		return OBJ_HDR_SIG;
+	case POOL_TYPE_CTO:
+		return CTO_HDR_SIG;
 	default:
 		return NULL;
 	}
@@ -955,6 +967,12 @@ pool_hdr_default(enum pool_type type, struct pool_hdr *hdrp)
 		hdrp->incompat_features = OBJ_FORMAT_INCOMPAT;
 		hdrp->ro_compat_features = OBJ_FORMAT_RO_COMPAT;
 		break;
+	case POOL_TYPE_CTO:
+		hdrp->major = CTO_FORMAT_MAJOR;
+		hdrp->compat_features = CTO_FORMAT_COMPAT;
+		hdrp->incompat_features = CTO_FORMAT_INCOMPAT;
+		hdrp->ro_compat_features = CTO_FORMAT_RO_COMPAT;
+		break;
 	default:
 		break;
 	}
@@ -972,6 +990,8 @@ pool_hdr_get_type(const struct pool_hdr *hdrp)
 		return POOL_TYPE_BLK;
 	else if (memcmp(hdrp->signature, OBJ_HDR_SIG, POOL_HDR_SIG_LEN) == 0)
 		return POOL_TYPE_OBJ;
+	else if (memcmp(hdrp->signature, CTO_HDR_SIG, POOL_HDR_SIG_LEN) == 0)
+		return POOL_TYPE_CTO;
 	else
 		return POOL_TYPE_UNKNOWN;
 }

@@ -48,6 +48,7 @@ LIBPMEM=y
 LIBPMEMBLK=y
 LIBPMEMOBJ=y
 LIBPMEMLOG=y
+LIBPMEMCTO=y
 LIBPMEMPOOL=y
 TOOLS_COMMON=y
 LIBPMEMLOG_PRIV=log_convert2h log_convert2le
@@ -65,6 +66,7 @@ INCS += -I$(TOP)/src/librpmem
 INCS += -I$(TOP)/src/libpmemlog
 INCS += -I$(TOP)/src/libpmemblk
 INCS += -I$(TOP)/src/libpmemobj
+INCS += -I$(TOP)/src/libpmemcto
 
 CFLAGS += -DUSE_RPMEM
 
