@@ -319,7 +319,7 @@ Development files for NVML libpmemcto library
 %{_libdir}/nvml_debug/libpmemcto.so.*
 %{_libdir}/nvml_debug/libpmemcto.a
 %{_includedir}/libpmemcto.h
-%{_mandir}/man3/libpmemcto.3.gz
+%{_mandir}/man3/pmemcto*.3.gz
 
 %package -n libpmemobj
 Summary: libpmemobj library
