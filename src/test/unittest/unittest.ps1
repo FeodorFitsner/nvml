@@ -611,13 +611,14 @@ function pass {
     if ($end_time) {
         Write-Host -NoNewline ("`t`t`t" + "[" + $end_time + " s]")
     }
+    Write-Host ""
 
     if ($Env:FS -ne "none") {
         if (isDir $DIR) {
              rm -Force -Recurse $DIR
         }
     }
-    Write-Host ""
+    Write-Host "$Env:UNITTEST_NAME : cleanup completed"
 }
 
 #
@@ -985,6 +986,8 @@ function require_no_unicode {
 #
 function setup {
     $Script:DIR = $DIR + $Env:SUFFIX
+
+    Write-Host "${Env:UNITTEST_NAME}: pre-SETUP checks"
 
     # test type must be explicitly specified
     if ($req_test_type -ne "1") {

@@ -275,11 +275,13 @@ function runtest {
                     break
                 }
 
+                Write-Host "about to start job"
                 $sb = {
                     cd $args[0]
                     Invoke-Expression $args[1]
                 }
                 $j1 = Start-Job -Name $name -ScriptBlock $sb -ArgumentList (pwd).Path, ".\$runscript"
+                Write-Host "job started..."
 
                 If ($use_timeout -And $testtype -eq "check") {
                     # execute with timeout
@@ -301,12 +303,15 @@ function runtest {
                     Receive-Job -Job $j1 -Wait
                 }
 
+                Write-Host "job received"
+
                 if ($j1.State -ne "Completed") {
                     Remove-Job -Job $j1 -Force
                     cd ..
                     throw "RUNTESTS: stopping: $testName/$runscript FAILED TEST=$testtype FS=$fs BUILD=$build"
                 }
                 Remove-Job -Job $j1 -Force
+                Write-Host "job removed"
             } # for builds
         } # for fss
     } # for runscripts
@@ -450,7 +455,10 @@ try {
             # only one job
             Get-ChildItem -Directory | % {
                 $LASTEXITCODE = 0
+                $n = $_.Name
+                Write-Host "runtest $n started"
                 runtest $_.Name
+                Write-host "runtest $n completed"
             }
         }
     } else {
