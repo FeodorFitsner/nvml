@@ -1,5 +1,4 @@
 os: Visual Studio 2015
-image: Previous Visual Studio 2015
 
 
 build_script:
