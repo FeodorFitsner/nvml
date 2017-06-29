@@ -3,6 +3,5 @@ image:
 - Previous Visual Studio 2015
 
 build_script:
-- ps: >-
-   cd src/test
-    ./RUNTESTS.ps1
+- ps: cd src/test
+- ps: for($i=1; $i -le 10; $i++) {.\RUNTESTS.ps1}
