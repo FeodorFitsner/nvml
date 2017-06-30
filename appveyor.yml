@@ -3,7 +3,7 @@ image:
 - Previous Visual Studio 2015
 
 init:
-  - ps: if ($env:APPVEYOR_BUILD_WORKER_IMAGE = "Visual Studio 2015") {wusa /uninstall /kb:4014507 /forcestart }
+  - ps: if ($env:APPVEYOR_BUILD_WORKER_IMAGE = "Visual Studio 2015") {write-host "uninstalling 4014507"; cmd /c wusa /uninstall /kb:4014507 /quiet /norestart}
   
 build_script:
 - ps: cd src/test
