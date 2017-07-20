@@ -1,4 +1,4 @@
-image: Visual Studio 2015
+image: Visual Studio 2013
 
 #init:
 #  - ps: if ($env:APPVEYOR_BUILD_WORKER_IMAGE -eq "Visual Studio 2015") {write-host "Uninstalling 4014507..."; cmd /c wusa /uninstall /kb:4014507 /quiet /forcerestart}
